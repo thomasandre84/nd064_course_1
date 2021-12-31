@@ -1,4 +1,5 @@
 import sqlite3
+import sys
 
 from flask import Flask, jsonify, json, render_template, request, url_for, redirect, flash
 from werkzeug.exceptions import abort
@@ -26,7 +27,6 @@ def get_post(post_id):
     connection = get_db_connection()
     post = connection.execute('SELECT * FROM posts WHERE id = ?',
                         (post_id,)).fetchone()
-    #connection.close()
     close_db_connection(connection)
     return post
 
@@ -39,7 +39,6 @@ app.config['SECRET_KEY'] = 'your secret key'
 def index():
     connection = get_db_connection()
     posts = connection.execute('SELECT * FROM posts').fetchall()
-    #connection.close()
     close_db_connection(connection)
     return render_template('index.html', posts=posts)
 
@@ -75,7 +74,6 @@ def create():
             connection.execute('INSERT INTO posts (title, content) VALUES (?, ?)',
                          (title, content))
             connection.commit()
-            #connection.close()
             app.logger.info('New Title "{}" is created'.format(title))
             close_db_connection(connection)
 
@@ -111,5 +109,6 @@ def metrics():
 
 # start the application on port 3111
 if __name__ == "__main__":
-    logging.basicConfig(format='%(levelname)s:%(name)s:%(asctime)s, %(message)s',encoding='utf-8', level=logging.DEBUG)
+    handlers = [logging.StreamHandler(sys.stdout), logging.StreamHandler(sys.stderr)]
+    logging.basicConfig(handlers=handlers, format='%(levelname)s:%(name)s:%(asctime)s, %(message)s',encoding='utf-8', level=logging.DEBUG)
     app.run(host='0.0.0.0', port='3111')
