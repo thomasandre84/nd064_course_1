@@ -9,11 +9,11 @@ metadata:
 spec:
   ports:
     - name: service-port
-      port: {{ .Values.port }}
+      port: {{ .Values.service.port }}
       protocol: {{ .Values.service.protocol }}
       targetPort: {{ .Values.targetPort }}
   selector:
     app: techtrends
-  type: ClusterIP
+  type: {{ .Values.service.type }}
 status:
   loadBalancer: {}
